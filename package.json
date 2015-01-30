@@ -10,7 +10,7 @@
     "type": "git",
     "url": ""
   },
-  "main": "server.coffee",
+  "main": "build/server.js",
   "bin": {
     "hari": "bin/hari"
   },
