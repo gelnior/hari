@@ -1,0 +1,57 @@
+// Base Styles
+
+@font-face
+    font-family: main
+    src: url('../katamotz.ttf');
+
+darkgrey = #444
+lightgrey = #777
+
+*
+  box-sizing: border-box
+
+html,
+body
+    height: 100%
+    width: 100%
+    margin: 0
+    padding: 0
+
+body
+    text-rendering: optimizeLegibility
+    background-color: #EEE
+    font: 300 16px main, sans-serif
+
+input
+textarea
+    color #444
+    font: 300 16px main, sans-serif
+
+textarea:focus
+textarea:active
+    outline: 0
+
+a,
+a:visited
+    color #0086cc
+    text-decoration none
+
+    &:hover
+        text-decoration underline
+
+#menu
+    padding: 10px
+
+    div
+        clear: both 
+
+    h1
+        float: left
+        margin: 0
+        padding: 0
+
+        a
+            color: black
+
+    a
+        float: right
