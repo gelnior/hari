@@ -1,0 +1,39 @@
+{
+  "name": "Hari",
+  "version": "1.0.0",
+  "engines": [
+    "node = 0.10.x"
+  ],
+  "description": "A simple lifelogger.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "server.coffee",
+  "bin": {
+    "hari": "bin/hari"
+  },
+  "dependencies": {
+    "americano": "0.3.11",
+    "americano-cozy": "0.2.11",
+    "express": "4.10.8",
+    "express-pouchdb": "0.13.0",
+    "path-extra": "^0.3.0",
+    "pouchdb": "3.2.1",
+    "printit": "0.1.3"
+  },
+  "devDependencies": {
+    "should": "4.0.1",
+    "mocha": "1.20.1",
+    "request-json-light": "*",
+    "cozy-fixtures": "1.1.1",
+    "coffeelint": "1.5.1"
+  },
+  "scripts": {
+    "test": "mocha",
+    "start": "node build/server.js"
+  },
+  "cozy-permissions": {},
+  "cozy-displayName": "Hari"
+}
