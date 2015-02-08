@@ -291,7 +291,7 @@ module.exports = pouch = {
         return doc.docType === 'DailyNote';
       }
     };
-    url = window.location.protocol + '//' + window.location.host + '/cozy/db';
+    url = window.location.protocol + '//' + window.location.host + '/db/cozy';
     pouch.db.allDocs({
       include_docs: true
     }, function(err, docs) {

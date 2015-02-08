@@ -65,7 +65,7 @@ module.exports = pouch =
             filter: (doc) -> doc.docType is 'DailyNote'
 
         url = window.location.protocol + '//' + \
-              window.location.host + '/cozy/db'
+              window.location.host + '/db/cozy'
 
         pouch.db.allDocs include_docs: true, (err, docs) ->
             for doc in docs.rows
