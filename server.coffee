@@ -2,11 +2,13 @@ americano = require 'americano'
 express = require 'express'
 expressPouchDB = require 'express-pouchdb'
 
-module.exports = start = (options, callback) ->
+
+start = module.exports.start = (options, callback) ->
     options ?= {}
     options.name ?= 'hari'
     options.port ?= process.env.PORT or 9673
     options.host ?= "0.0.0.0"
+    options.root ?= __dirname
     options.PouchDB ?= require 'pouchdb'
 
     americano.start options, (app, server) ->

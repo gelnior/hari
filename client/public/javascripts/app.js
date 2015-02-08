@@ -102,6 +102,7 @@ module.exports = {
     }
   }
 };
+
 });
 
 ;require.register("collections/daily_notes", function(exports, require, module) {
@@ -121,6 +122,7 @@ module.exports = DailyNotesCollection = (function(_super) {
   return DailyNotesCollection;
 
 })(Backbone.Collection);
+
 });
 
 ;require.register("initialize", function(exports, require, module) {
@@ -132,6 +134,7 @@ $(function() {
   require('lib/app_helpers');
   return app.initialize();
 });
+
 });
 
 ;require.register("lib/app_helpers", function(exports, require, module) {
@@ -149,6 +152,7 @@ $(function() {
     return _results;
   })();
 })();
+
 });
 
 ;require.register("lib/base_view", function(exports, require, module) {
@@ -205,6 +209,7 @@ module.exports = BaseView = (function(_super) {
   return BaseView;
 
 })(Backbone.View);
+
 });
 
 ;require.register("lib/db", function(exports, require, module) {
@@ -311,6 +316,7 @@ module.exports = pouch = {
     });
   }
 };
+
 });
 
 ;require.register("lib/request", function(exports, require, module) {
@@ -351,6 +357,7 @@ exports.put = function(url, data, callback) {
 exports.del = function(url, callback) {
   return exports.request("DELETE", url, null, callback);
 };
+
 });
 
 ;require.register("lib/view_collection", function(exports, require, module) {
@@ -473,6 +480,7 @@ module.exports = ViewCollection = (function(_super) {
   return ViewCollection;
 
 })(BaseView);
+
 });
 
 ;require.register("models/daily_note", function(exports, require, module) {
@@ -492,6 +500,7 @@ module.exports = DailyNote = (function(_super) {
   return DailyNote;
 
 })(Backbone.Model);
+
 });
 
 ;require.register("router", function(exports, require, module) {
@@ -536,6 +545,7 @@ module.exports = Router = (function(_super) {
   return Router;
 
 })(Backbone.Router);
+
 });
 
 ;require.register("views/app_view", function(exports, require, module) {
@@ -623,6 +633,7 @@ module.exports = AppView = (function(_super) {
   return AppView;
 
 })(BaseView);
+
 });
 
 ;require.register("views/daily_note", function(exports, require, module) {
@@ -659,6 +670,7 @@ module.exports = DailyNoteView = (function(_super) {
   return DailyNoteView;
 
 })(BaseView);
+
 });
 
 ;require.register("views/daily_note_widget", function(exports, require, module) {
@@ -757,6 +769,7 @@ module.exports = DailyNoteWidget = (function(_super) {
   return DailyNoteWidget;
 
 })(BaseView);
+
 });
 
 ;require.register("views/daily_notes", function(exports, require, module) {
@@ -806,6 +819,7 @@ module.exports = DailyNotesView = (function(_super) {
   return DailyNotesView;
 
 })(ViewCollection);
+
 });
 
 ;require.register("views/templates/daily_note", function(exports, require, module) {
@@ -831,6 +845,7 @@ if (typeof define === 'function' && define.amd) {
 h2.date = date;
 
 textarea;
+
 });
 
 ;require.register("views/templates/daily_note_widget", function(exports, require, module) {
@@ -872,4 +887,3 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;
-//# sourceMappingURL=app.js.map

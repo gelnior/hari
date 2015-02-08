@@ -12,7 +12,7 @@ if(process.env.POUCHDB_NAME === undefined) {
 }
 
 var root = path.join(__dirname, '..', 'build');
-var start = require(path.join(root, 'server'));
+var start = require(path.join(root, 'server')).start;
 var port = process.env.PORT || 9638;
 
 start({root: root, port: port}, function() {});

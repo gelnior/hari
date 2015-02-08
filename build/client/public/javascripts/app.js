@@ -225,7 +225,7 @@ module.exports = pouch = {
         if (doc == null) {
           doc = {
             _id: "dailynote-" + day,
-            docType: "dailyNote",
+            docType: "DailyNote",
             date: day,
             text: ''
           };
@@ -274,7 +274,7 @@ module.exports = pouch = {
             _ref = res.rows;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               doc = _ref[_i];
-              if (doc.doc.docType === 'dailyNote') {
+              if (doc.doc.docType === 'DailyNote') {
                 notes.push(new DailyNote(doc.doc));
               }
             }
@@ -288,10 +288,10 @@ module.exports = pouch = {
     var syncOptions, url;
     syncOptions = {
       filter: function(doc) {
-        return doc.docType === 'dailyNote';
+        return doc.docType === 'DailyNote';
       }
     };
-    url = window.location.protocol + '//' + window.location.host + '/db/db';
+    url = window.location.protocol + '//' + window.location.host + '/cozy/db';
     pouch.db.allDocs({
       include_docs: true
     }, function(err, docs) {
@@ -549,7 +549,7 @@ module.exports = Router = (function(_super) {
 });
 
 ;require.register("views/app_view", function(exports, require, module) {
-var AppView, BaseView, DailyNote, DailyNotes, pouch,
+var AppView, BaseView, DailyNote, DailyNoteWidget, DailyNotes, pouch,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -561,69 +561,7 @@ DailyNote = require('../models/daily_note');
 
 DailyNotes = require('./daily_notes');
 
-
-/*
-class DailyNoteWidget extends BaseView
-    el: '#daily-note'
-    template: require './templates/daily_note_widget'
-
-
-    events:
-        'keyup textarea': 'saveNote'
-        'click .remove': 'deleteNote'
-
-
-    afterRender: ->
-        @textField = @$ 'textarea'
-        @dateField = @$ '.date-field'
-
-
-    saveNote: =>
-        unless @isSaving
-            @isSaving = true
-            setTimeout =>
-                @isSaving = false
-                @model.set 'date', @day
-                @model.set 'text', @textField.val()
-                pouch.notes.save @model.attributes
-            , 3000
-
-
-    deleteNote: =>
-        pouch.notes.remove @model, =>
-            Backbone.history.navigate 'archives', trigger: true
-
-
-    resizeTextArea: ->
-        @textField?.height $(window).height() - 180
-
-
-    show: (day) ->
-        @day = day
-        unless @isSaving
-            @_showEl()
-
-            @showLoading()
-            pouch.notes.get day, (err, model) =>
-                @hideLoading()
-
-                @model = model
-                @textField.val model.get 'text'
-                @dateField.html model.get 'date'
-
-                @_focusTextarea()
-
-
-    _focusTextarea: ->
-        @textField.focus()
-        len = @textField.val().length
-        @textField[0].setSelectionRange len, len
-
-
-    _showEl: ->
-        @resizeTextArea()
-        @$el.show()
- */
+DailyNoteWidget = require('./daily_note_widget');
 
 module.exports = AppView = (function(_super) {
   __extends(AppView, _super);
@@ -644,7 +582,7 @@ module.exports = AppView = (function(_super) {
 
   AppView.prototype.afterRender = function() {
     this.widgets = $('.widget');
-    alert('yo');
+    this.noteWidget = new DailyNoteWidget;
     $(window).resize(this.noteWidget.resizeTextArea);
     $(window).on('unload', this.noteWidget.saveNote);
     this.archivesWidget = $('#archives');
@@ -676,14 +614,17 @@ module.exports = AppView = (function(_super) {
         return function(info) {
           console.log("change:");
           console.log(info);
-          if (info.direction === 'pull') {
+          if (info.direction === 'pull' && info.change.docs_written > 0) {
             return _this.noteWidget.show(_this.noteWidget.model.date);
           }
         };
       })(this),
-      onUpToDate: function(info) {},
+      onUpToDate: function(info) {
+        console.log("uptodate:");
+        return console.log(info);
+      },
       onError: function(err) {
-        console.log("An error occured while synchronizing data");
+        console.log("An error occured while synchronizing data:");
         return console.log(err);
       }
     });
@@ -733,12 +674,14 @@ module.exports = DailyNoteView = (function(_super) {
 });
 
 ;require.register("views/daily_note_widget", function(exports, require, module) {
-var DailyNoteWidget, pouch,
+var BaseView, DailyNoteWidget, pouch,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 pouch = require('../lib/db');
+
+BaseView = require('../lib/base_view');
 
 module.exports = DailyNoteWidget = (function(_super) {
   __extends(DailyNoteWidget, _super);
@@ -760,7 +703,8 @@ module.exports = DailyNoteWidget = (function(_super) {
 
   DailyNoteWidget.prototype.afterRender = function() {
     this.textField = this.$('textarea');
-    return this.dateField = this.$('.date-field');
+    this.dateField = this.$('.date-field');
+    return this.isSaving = false;
   };
 
   DailyNoteWidget.prototype.saveNote = function() {
@@ -768,10 +712,11 @@ module.exports = DailyNoteWidget = (function(_super) {
       this.isSaving = true;
       return setTimeout((function(_this) {
         return function() {
-          _this.isSaving = false;
           _this.model.set('date', _this.day);
           _this.model.set('text', _this.textField.val());
-          return pouch.notes.save(_this.model.attributes);
+          return pouch.notes.save(_this.model.attributes, function(err) {
+            return _this.isSaving = false;
+          });
         };
       })(this), 3000);
     }
@@ -793,8 +738,8 @@ module.exports = DailyNoteWidget = (function(_super) {
   };
 
   DailyNoteWidget.prototype.show = function(day) {
-    this.day = day;
-    if (!this.isSaving) {
+    if (!(this.isSaving || this.isTyping)) {
+      this.day = day;
       this._showEl();
       this.showLoading();
       return pouch.notes.get(day, (function(_this) {

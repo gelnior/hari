@@ -7,7 +7,7 @@ express = require('express');
 
 expressPouchDB = require('express-pouchdb');
 
-module.exports = start = function(options, callback) {
+start = module.exports.start = function(options, callback) {
   if (options == null) {
     options = {};
   }
@@ -20,13 +20,16 @@ module.exports = start = function(options, callback) {
   if (options.host == null) {
     options.host = "0.0.0.0";
   }
+  if (options.root == null) {
+    options.root = __dirname;
+  }
   if (options.PouchDB == null) {
     options.PouchDB = require('pouchdb');
   }
   return americano.start(options, function(app, server) {
     var opts;
     opts = {};
-    app.use('/db', expressPouchDB(options.PouchDB, opts));
+    app.use('/cozy', expressPouchDB(options.PouchDB, opts));
     if (options.db == null) {
       options.db = new options.PouchDB('db');
     }
