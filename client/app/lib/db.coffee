@@ -44,21 +44,6 @@ module.exports = pouch =
                         callback?()
 
 
-        all: (callback) ->
-            pouch.db.allDocs include_docs: true, (err, res) =>
-
-                if err
-                    callback err
-
-                else
-                    notes = []
-                    for doc in res.rows
-                        if doc.doc.docType is 'DailyNote'
-                            notes.push new DailyNote doc.doc
-
-                    callback null, notes
-
-
     sync: (options) ->
 
         syncOptions =
@@ -79,3 +64,12 @@ module.exports = pouch =
                         .on 'uptodate',  options.onUpToDate
                         .on 'error',  options.onUpToDate
                 , 2000
+
+
+    initialize: ->
+        Backbone.sync = BackbonePouch.sync
+            db: @db
+            fetch: 'query'
+            options:
+                query:
+                    include_docs: true

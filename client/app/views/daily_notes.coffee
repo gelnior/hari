@@ -19,10 +19,9 @@ module.exports = class DailyNotesView extends ViewCollection
         @collection.on 'add', @renderOne
 
         @showLoading()
-        pouch.notes.all (err, notes) =>
-            @hideLoading()
-            if err
+        @collection.fetch
+            success: =>
+                @hideLoading()
+            error: (err) =>
                 console.log err
-            else
-                @collection.reset notes.reverse()
 

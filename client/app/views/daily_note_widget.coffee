@@ -19,6 +19,7 @@ module.exports = class DailyNoteWidget extends BaseView
         @isSaving = false
 
 
+    # Save note to database after 3s.
     saveNote: =>
         unless @isSaving
             @isSaving = true
@@ -26,20 +27,23 @@ module.exports = class DailyNoteWidget extends BaseView
                 @model.set 'date', @day
                 @model.set 'text', @textField.val()
                 pouch.notes.save @model.attributes, (err) =>
+                    console.log err if err
                     @isSaving = false
-
             , 3000
 
 
+    # Delete current note.
     deleteNote: =>
         pouch.notes.remove @model, =>
             Backbone.history.navigate 'archives', trigger: true
 
-
+    # Resize text area (useful when window is resized).
     resizeTextArea: ->
         @textField?.height $(window).height() - 180
 
 
+    # Display current widget for given day.
+    # Reload text, if the widget is already visible.
     show: (day) ->
 
         unless @isSaving or @isTyping
@@ -57,12 +61,14 @@ module.exports = class DailyNoteWidget extends BaseView
                 @_focusTextarea()
 
 
+    # Focus on given text area.
     _focusTextarea: ->
         @textField.focus()
         len = @textField.val().length
         @textField[0].setSelectionRange len, len
 
 
+    # Show element.
     _showEl: ->
         @resizeTextArea()
         @$el.show()

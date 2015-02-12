@@ -1,5 +1,7 @@
 BaseView = require 'lib/base_view'
 
+
+# Base view widget to display/manage list of data.
 module.exports = class ViewCollection extends BaseView
 
     itemview: null

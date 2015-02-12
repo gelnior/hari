@@ -20,6 +20,8 @@ module.exports = class AppView extends BaseView
         date: moment().format 'DD/MM/YYYY'
 
 
+    # After the main view is rendered, it builds the daily note widget
+    # that allows the user to write his note.
     afterRender: ->
         @widgets = $ '.widget'
 
@@ -33,27 +35,31 @@ module.exports = class AppView extends BaseView
         @setSync()
 
 
+    # Display given widget (note editor, note list...)
     showWidget: (widget, id) ->
         @widgets.hide()
         @[widget] id if @[widget]?
 
 
+    # Load an display given note.
     dailyNote: (day) ->
         day ?= moment().format 'YYYY-MM-DD'
         @noteWidget.show day
 
 
+    # Show archives widget.
     archives: ->
         @archivesWidget.show()
 
 
+    # Configure PouchDB synchronisation.
     setSync: ->
         pouch.sync
             onChange: (info) =>
                 console.log "change:"
                 console.log info
                 if info.direction is 'pull' and info.change.docs_written > 0
-                    @noteWidget.show @noteWidget.model.date
+                    @noteWidget.show @noteWidget.model.get 'date'
             onUpToDate: (info) ->
                 console.log "uptodate:"
                 console.log info

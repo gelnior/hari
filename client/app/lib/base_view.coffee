@@ -1,3 +1,4 @@
+# Base component to build widgets.
 module.exports = class BaseView extends Backbone.View
 
     template: ->
