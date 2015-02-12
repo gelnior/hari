@@ -102,7 +102,6 @@ module.exports = {
     }
   }
 };
-
 });
 
 ;require.register("collections/daily_notes", function(exports, require, module) {
@@ -119,22 +118,47 @@ module.exports = DailyNotesCollection = (function(_super) {
 
   DailyNotesCollection.prototype.model = require('../models/daily_note');
 
+  DailyNotesCollection.prototype.pouch = {
+    options: {
+      query: {
+        fun: {
+          map: function(doc) {
+            if (doc.docType === 'DailyNote') {
+              return emit(doc.name, null);
+            }
+          }
+        }
+      },
+      changes: {
+        include_docs: true,
+        filter: function(doc) {
+          return doc._deleted || doc.docType === 'DailyNote';
+        }
+      }
+    }
+  };
+
+  DailyNotesCollection.prototype.parse = function(result) {
+    return _.pluck(result.rows, 'doc').reverse();
+  };
+
   return DailyNotesCollection;
 
 })(Backbone.Collection);
-
 });
 
 ;require.register("initialize", function(exports, require, module) {
-var app;
+var app, db;
 
 app = require('application');
 
+db = require('lib/db');
+
 $(function() {
   require('lib/app_helpers');
+  db.initialize();
   return app.initialize();
 });
-
 });
 
 ;require.register("lib/app_helpers", function(exports, require, module) {
@@ -152,7 +176,6 @@ $(function() {
     return _results;
   })();
 })();
-
 });
 
 ;require.register("lib/base_view", function(exports, require, module) {
@@ -209,7 +232,6 @@ module.exports = BaseView = (function(_super) {
   return BaseView;
 
 })(Backbone.View);
-
 });
 
 ;require.register("lib/db", function(exports, require, module) {
@@ -260,28 +282,6 @@ module.exports = pouch = {
           }
         };
       })(this));
-    },
-    all: function(callback) {
-      return pouch.db.allDocs({
-        include_docs: true
-      }, (function(_this) {
-        return function(err, res) {
-          var doc, notes, _i, _len, _ref;
-          if (err) {
-            return callback(err);
-          } else {
-            notes = [];
-            _ref = res.rows;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              doc = _ref[_i];
-              if (doc.doc.docType === 'DailyNote') {
-                notes.push(new DailyNote(doc.doc));
-              }
-            }
-            return callback(null, notes);
-          }
-        };
-      })(this));
     }
   },
   sync: function(options) {
@@ -314,9 +314,19 @@ module.exports = pouch = {
         return sync = pouch.db.sync(url, syncOptions).on('change', options.onChange).on('uptodate', options.onUpToDate).on('error', options.onUpToDate);
       }, 2000);
     });
+  },
+  initialize: function() {
+    return Backbone.sync = BackbonePouch.sync({
+      db: this.db,
+      fetch: 'query',
+      options: {
+        query: {
+          include_docs: true
+        }
+      }
+    });
   }
 };
-
 });
 
 ;require.register("lib/request", function(exports, require, module) {
@@ -357,7 +367,6 @@ exports.put = function(url, data, callback) {
 exports.del = function(url, callback) {
   return exports.request("DELETE", url, null, callback);
 };
-
 });
 
 ;require.register("lib/view_collection", function(exports, require, module) {
@@ -480,7 +489,6 @@ module.exports = ViewCollection = (function(_super) {
   return ViewCollection;
 
 })(BaseView);
-
 });
 
 ;require.register("models/daily_note", function(exports, require, module) {
@@ -495,12 +503,9 @@ module.exports = DailyNote = (function(_super) {
     return DailyNote.__super__.constructor.apply(this, arguments);
   }
 
-  DailyNote.prototype.urlRoot = 'dailynotes/';
-
   return DailyNote;
 
 })(Backbone.Model);
-
 });
 
 ;require.register("router", function(exports, require, module) {
@@ -545,7 +550,6 @@ module.exports = Router = (function(_super) {
   return Router;
 
 })(Backbone.Router);
-
 });
 
 ;require.register("views/app_view", function(exports, require, module) {
@@ -615,7 +619,7 @@ module.exports = AppView = (function(_super) {
           console.log("change:");
           console.log(info);
           if (info.direction === 'pull' && info.change.docs_written > 0) {
-            return _this.noteWidget.show(_this.noteWidget.model.date);
+            return _this.noteWidget.show(_this.noteWidget.model.get('date'));
           }
         };
       })(this),
@@ -633,7 +637,6 @@ module.exports = AppView = (function(_super) {
   return AppView;
 
 })(BaseView);
-
 });
 
 ;require.register("views/daily_note", function(exports, require, module) {
@@ -670,7 +673,6 @@ module.exports = DailyNoteView = (function(_super) {
   return DailyNoteView;
 
 })(BaseView);
-
 });
 
 ;require.register("views/daily_note_widget", function(exports, require, module) {
@@ -715,6 +717,9 @@ module.exports = DailyNoteWidget = (function(_super) {
           _this.model.set('date', _this.day);
           _this.model.set('text', _this.textField.val());
           return pouch.notes.save(_this.model.attributes, function(err) {
+            if (err) {
+              console.log(err);
+            }
             return _this.isSaving = false;
           });
         };
@@ -769,7 +774,6 @@ module.exports = DailyNoteWidget = (function(_super) {
   return DailyNoteWidget;
 
 })(BaseView);
-
 });
 
 ;require.register("views/daily_notes", function(exports, require, module) {
@@ -804,22 +808,23 @@ module.exports = DailyNotesView = (function(_super) {
     this.collection.on('reset', this.renderAll);
     this.collection.on('add', this.renderOne);
     this.showLoading();
-    return pouch.notes.all((function(_this) {
-      return function(err, notes) {
-        _this.hideLoading();
-        if (err) {
+    return this.collection.fetch({
+      success: (function(_this) {
+        return function() {
+          return _this.hideLoading();
+        };
+      })(this),
+      error: (function(_this) {
+        return function(err) {
           return console.log(err);
-        } else {
-          return _this.collection.reset(notes.reverse());
-        }
-      };
-    })(this));
+        };
+      })(this)
+    });
   };
 
   return DailyNotesView;
 
 })(ViewCollection);
-
 });
 
 ;require.register("views/templates/daily_note", function(exports, require, module) {
@@ -845,7 +850,6 @@ if (typeof define === 'function' && define.amd) {
 h2.date = date;
 
 textarea;
-
 });
 
 ;require.register("views/templates/daily_note_widget", function(exports, require, module) {
@@ -887,3 +891,4 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;
+//# sourceMappingURL=app.js.map
