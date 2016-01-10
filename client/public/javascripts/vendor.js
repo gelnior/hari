@@ -3376,5 +3376,3 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
     }
 }).call(this);
 
-
-//# sourceMappingURL=vendor.js.map
