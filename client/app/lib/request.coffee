@@ -34,3 +34,4 @@ exports.put = (url, data, callback) ->
 # Expected callbacks: success and error
 exports.del = (url, callback) ->
     exports.request "DELETE", url, null, callback
+

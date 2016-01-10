@@ -1,9 +1,10 @@
 {
-    "dependencies": {
-        "javascript-brunch": "1.7.1",
-        "css-brunch": "1.7.0",
-        "coffee-script-brunch": "1.8.1",
-        "stylus-brunch": "1.8.1",
-        "jade-brunch": "1.8.1"
-    }
+  "dependencies": {
+    "coffee-script-brunch": "1.8.1",
+    "css-brunch": "1.7.0",
+    "jade": "^1.11.0",
+    "jade-brunch": "^1.8.1",
+    "javascript-brunch": "1.7.1",
+    "stylus-brunch": "1.8.1"
+  }
 }

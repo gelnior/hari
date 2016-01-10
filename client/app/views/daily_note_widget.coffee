@@ -1,5 +1,3 @@
-pouch = require '../lib/db'
-
 BaseView = require '../lib/base_view'
 
 
@@ -24,18 +22,22 @@ module.exports = class DailyNoteWidget extends BaseView
         unless @isSaving
             @isSaving = true
             setTimeout =>
-                @model.set 'date', @day
-                @model.set 'text', @textField.val()
-                pouch.notes.save @model.attributes, (err) =>
-                    console.log err if err
-                    @isSaving = false
+                @model.set 'content', @textField.val()
+                @model.save
+                    success: =>
+                        @isSaving = false
+                        @saveNote()
+                    error: ->
+                        @isSaving = false
+                        @saveNote()
             , 3000
 
 
     # Delete current note.
     deleteNote: =>
-        pouch.notes.remove @model, =>
-            Backbone.history.navigate 'archives', trigger: true
+        @model.destroy()
+        Backbone.history.navigate 'archives', trigger: true
+
 
     # Resize text area (useful when window is resized).
     resizeTextArea: ->
@@ -44,21 +46,16 @@ module.exports = class DailyNoteWidget extends BaseView
 
     # Display current widget for given day.
     # Reload text, if the widget is already visible.
-    show: (day) ->
+    show: (note) ->
+        @_hideLoading()
+        @model = note
 
-        unless @isSaving or @isTyping
-            @day = day
-            @_showEl()
+        @_showEl()
 
-            @showLoading()
-            pouch.notes.get day, (err, model) =>
-                @hideLoading()
+        @textField.val @model.get('content') or ''
+        @dateField.html moment(@model.get 'date').format 'll'
 
-                @model = model
-                @textField.val model.get 'text'
-                @dateField.html model.get 'date'
-
-                @_focusTextarea()
+        @_focusTextarea()
 
 
     # Focus on given text area.
@@ -72,4 +69,12 @@ module.exports = class DailyNoteWidget extends BaseView
     _showEl: ->
         @resizeTextArea()
         @$el.show()
+
+
+    _showLoading: ->
+        @$('.spinner').show()
+
+
+    _hideLoading: ->
+        @$('.spinner').hide()
 

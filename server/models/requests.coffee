@@ -3,13 +3,7 @@
 americano = require 'americano'
 
 module.exports =
-    template:
-        # shortcut for emit doc._id, doc
+    dailynote:
         all: americano.defaultRequests.all
+        byDate: americano.defaultRequests.by 'date'
 
-        # create all the requests you want!
-        customRequest:
-            map: (doc) ->
-                # map function
-            reduce: (key, values, rereduce) ->
-                # non mandatory reduce function

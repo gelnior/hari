@@ -8,3 +8,4 @@ module.exports =
 
         # Makes this object immuable.
         Object.freeze this if typeof Object.freeze is 'function'
+

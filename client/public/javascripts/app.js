@@ -1,42 +1,59 @@
-(function(/*! Brunch !*/) {
+(function() {
   'use strict';
 
-  var globals = typeof window !== 'undefined' ? window : global;
+  var globals = typeof window === 'undefined' ? global : window;
   if (typeof globals.require === 'function') return;
 
   var modules = {};
   var cache = {};
+  var has = ({}).hasOwnProperty;
 
-  var has = function(object, name) {
-    return ({}).hasOwnProperty.call(object, name);
+  var aliases = {};
+
+  var endsWith = function(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
   };
 
-  var expand = function(root, name) {
-    var results = [], parts, part;
-    if (/^\.\.?(\/|$)/.test(name)) {
-      parts = [root, name].join('/').split('/');
-    } else {
-      parts = name.split('/');
-    }
-    for (var i = 0, length = parts.length; i < length; i++) {
-      part = parts[i];
-      if (part === '..') {
-        results.pop();
-      } else if (part !== '.' && part !== '') {
-        results.push(part);
+  var unalias = function(alias, loaderPath) {
+    var start = 0;
+    if (loaderPath) {
+      if (loaderPath.indexOf('components/' === 0)) {
+        start = 'components/'.length;
+      }
+      if (loaderPath.indexOf('/', start) > 0) {
+        loaderPath = loaderPath.substring(start, loaderPath.indexOf('/', start));
       }
     }
-    return results.join('/');
+    var result = aliases[alias + '/index.js'] || aliases[loaderPath + '/deps/' + alias + '/index.js'];
+    if (result) {
+      return 'components/' + result.substring(0, result.length - '.js'.length);
+    }
+    return alias;
   };
 
+  var expand = (function() {
+    var reg = /^\.\.?(\/|$)/;
+    return function(root, name) {
+      var results = [], parts, part;
+      parts = (reg.test(name) ? root + '/' + name : name).split('/');
+      for (var i = 0, length = parts.length; i < length; i++) {
+        part = parts[i];
+        if (part === '..') {
+          results.pop();
+        } else if (part !== '.' && part !== '') {
+          results.push(part);
+        }
+      }
+      return results.join('/');
+    };
+  })();
   var dirname = function(path) {
     return path.split('/').slice(0, -1).join('/');
   };
 
   var localRequire = function(path) {
     return function(name) {
-      var dir = dirname(path);
-      var absolute = expand(dir, name);
+      var absolute = expand(dirname(path), name);
       return globals.require(absolute, path);
     };
   };
@@ -51,21 +68,26 @@
   var require = function(name, loaderPath) {
     var path = expand(name, '.');
     if (loaderPath == null) loaderPath = '/';
+    path = unalias(name, loaderPath);
 
-    if (has(cache, path)) return cache[path].exports;
-    if (has(modules, path)) return initModule(path, modules[path]);
+    if (has.call(cache, path)) return cache[path].exports;
+    if (has.call(modules, path)) return initModule(path, modules[path]);
 
     var dirIndex = expand(path, './index');
-    if (has(cache, dirIndex)) return cache[dirIndex].exports;
-    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
+    if (has.call(cache, dirIndex)) return cache[dirIndex].exports;
+    if (has.call(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
 
     throw new Error('Cannot find module "' + name + '" from '+ '"' + loaderPath + '"');
   };
 
-  var define = function(bundle, fn) {
+  require.alias = function(from, to) {
+    aliases[to] = from;
+  };
+
+  require.register = require.define = function(bundle, fn) {
     if (typeof bundle === 'object') {
       for (var key in bundle) {
-        if (has(bundle, key)) {
+        if (has.call(bundle, key)) {
           modules[key] = bundle[key];
         }
       }
@@ -74,21 +96,18 @@
     }
   };
 
-  var list = function() {
+  require.list = function() {
     var result = [];
     for (var item in modules) {
-      if (has(modules, item)) {
+      if (has.call(modules, item)) {
         result.push(item);
       }
     }
     return result;
   };
 
+  require.brunch = true;
   globals.require = require;
-  globals.require.define = define;
-  globals.require.register = define;
-  globals.require.list = list;
-  globals.require.brunch = true;
 })();
 require.register("application", function(exports, require, module) {
 module.exports = {
@@ -116,31 +135,7 @@ module.exports = DailyNotesCollection = (function(_super) {
     return DailyNotesCollection.__super__.constructor.apply(this, arguments);
   }
 
-  DailyNotesCollection.prototype.model = require('../models/daily_note');
-
-  DailyNotesCollection.prototype.pouch = {
-    options: {
-      query: {
-        fun: {
-          map: function(doc) {
-            if (doc.docType === 'DailyNote') {
-              return emit(doc.name, null);
-            }
-          }
-        }
-      },
-      changes: {
-        include_docs: true,
-        filter: function(doc) {
-          return doc._deleted || doc.docType === 'DailyNote';
-        }
-      }
-    }
-  };
-
-  DailyNotesCollection.prototype.parse = function(result) {
-    return _.pluck(result.rows, 'doc').reverse();
-  };
+  DailyNotesCollection.prototype.url = 'daily-notes';
 
   return DailyNotesCollection;
 
@@ -148,15 +143,12 @@ module.exports = DailyNotesCollection = (function(_super) {
 });
 
 ;require.register("initialize", function(exports, require, module) {
-var app, db;
+var app;
 
 app = require('application');
 
-db = require('lib/db');
-
 $(function() {
   require('lib/app_helpers');
-  db.initialize();
   return app.initialize();
 });
 });
@@ -232,101 +224,6 @@ module.exports = BaseView = (function(_super) {
   return BaseView;
 
 })(Backbone.View);
-});
-
-;require.register("lib/db", function(exports, require, module) {
-var DailyNote, pouch;
-
-DailyNote = require('../models/daily_note');
-
-module.exports = pouch = {
-  db: new PouchDB('db'),
-  notes: {
-    get: function(day, callback) {
-      return pouch.db.get("dailynote-" + day, function(err, doc) {
-        if (doc == null) {
-          doc = {
-            _id: "dailynote-" + day,
-            docType: "DailyNote",
-            date: day,
-            text: ''
-          };
-        }
-        return callback(err, new DailyNote(doc));
-      });
-    },
-    remove: function(doc, callback) {
-      return pouch.db.remove(doc.attributes, function(err) {
-        return typeof callback === "function" ? callback() : void 0;
-      });
-    },
-    save: function(doc, callback) {
-      return pouch.db.get(doc._id, (function(_this) {
-        return function(err, dbDoc) {
-          if (err && err.status !== 404) {
-            console.log('An error occured with PouchDB:');
-            return console.log(err);
-          } else {
-            if (dbDoc != null) {
-              doc._rev = dbDoc._rev;
-            }
-            return pouch.db.put(doc, function(err, doc) {
-              if (err) {
-                console.log('An error occured with PouchDB:');
-                console.log(err);
-              } else {
-                doc._rev = doc.rev;
-              }
-              return typeof callback === "function" ? callback() : void 0;
-            });
-          }
-        };
-      })(this));
-    }
-  },
-  sync: function(options) {
-    var syncOptions, url;
-    syncOptions = {
-      filter: function(doc) {
-        return doc.docType === 'DailyNote';
-      }
-    };
-    url = window.location.protocol + '//' + window.location.host + '/db/cozy';
-    pouch.db.allDocs({
-      include_docs: true
-    }, function(err, docs) {
-      var doc, _i, _len, _ref, _results;
-      _ref = docs.rows;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        doc = _ref[_i];
-        if (!doc.doc.date) {
-          _results.push(pouch.db.remove(doc.doc));
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
-    });
-    return pouch.db.sync(url, syncOptions).on('complete', function() {
-      return setInterval(function() {
-        var sync;
-        return sync = pouch.db.sync(url, syncOptions).on('change', options.onChange).on('uptodate', options.onUpToDate).on('error', options.onUpToDate);
-      }, 2000);
-    });
-  },
-  initialize: function() {
-    return Backbone.sync = BackbonePouch.sync({
-      db: this.db,
-      fetch: 'query',
-      options: {
-        query: {
-          include_docs: true
-        }
-      }
-    });
-  }
-};
 });
 
 ;require.register("lib/request", function(exports, require, module) {
@@ -499,8 +396,11 @@ var DailyNote,
 module.exports = DailyNote = (function(_super) {
   __extends(DailyNote, _super);
 
+  DailyNote.prototype.urlRoot = 'daily-notes';
+
   function DailyNote() {
-    return DailyNote.__super__.constructor.apply(this, arguments);
+    DailyNote.__super__.constructor.apply(this, arguments);
+    this.set('id', this.get('date').format('YYYY-MM-DD'));
   }
 
   return DailyNote;
@@ -529,7 +429,11 @@ module.exports = Router = (function(_super) {
   };
 
   Router.prototype.main = function() {
-    return this.displayWidget('dailyNote');
+    var day;
+    day = moment();
+    return this.navigate(day.format('YYYY-MM-DD'), {
+      trigger: true
+    });
   };
 
   Router.prototype.archives = function() {
@@ -540,11 +444,11 @@ module.exports = Router = (function(_super) {
     return this.displayWidget('dailyNote', date);
   };
 
-  Router.prototype.displayWidget = function(view, id) {
-    if (typeof mainWidget === "undefined" || mainWidget === null) {
+  Router.prototype.displayWidget = function(view, date) {
+    if (this.mainView == null) {
       this.mainView = new AppView();
     }
-    return this.mainView.showWidget(view, id);
+    return this.mainView.showWidget(view, date);
   };
 
   return Router;
@@ -553,11 +457,9 @@ module.exports = Router = (function(_super) {
 });
 
 ;require.register("views/app_view", function(exports, require, module) {
-var AppView, BaseView, DailyNote, DailyNoteWidget, DailyNotes, pouch,
+var AppView, BaseView, DailyNote, DailyNoteWidget, DailyNotes,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-pouch = require('../lib/db');
 
 BaseView = require('../lib/base_view');
 
@@ -590,48 +492,54 @@ module.exports = AppView = (function(_super) {
     $(window).resize(this.noteWidget.resizeTextArea);
     $(window).on('unload', this.noteWidget.saveNote);
     this.archivesWidget = $('#archives');
-    this.notes = new DailyNotes;
-    return this.setSync();
+    return this.notes = new DailyNotes;
   };
 
-  AppView.prototype.showWidget = function(widget, id) {
+  AppView.prototype.showWidget = function(widget, date) {
     this.widgets.hide();
     if (this[widget] != null) {
-      return this[widget](id);
+      return this[widget](date);
     }
   };
 
   AppView.prototype.dailyNote = function(day) {
-    if (day == null) {
-      day = moment().format('YYYY-MM-DD');
+    var dayValue, note;
+    if (day != null) {
+      day = moment(day).startOf('day');
+    } else {
+      day = moment().startOf('day');
     }
-    return this.noteWidget.show(day);
+    dayValue = "" + (day.format('YYYY-MM-DDT00:00:00.000')) + "Z";
+    note = this.notes.collection.findWhere({
+      date: dayValue
+    });
+    if (note != null) {
+      note.set('id', day.format('YYYY-MM-DD'));
+      return this.noteWidget.show(note);
+    } else {
+      if (note == null) {
+        note = new DailyNote({
+          date: day
+        });
+      }
+      return note.fetch({
+        success: (function(_this) {
+          return function(model) {
+            note.set('id', day.format('YYYY-MM-DD'));
+            return _this.noteWidget.show(note);
+          };
+        })(this),
+        error: (function(_this) {
+          return function(model) {
+            return _this.noteWidget.show(model);
+          };
+        })(this)
+      });
+    }
   };
 
   AppView.prototype.archives = function() {
     return this.archivesWidget.show();
-  };
-
-  AppView.prototype.setSync = function() {
-    return pouch.sync({
-      onChange: (function(_this) {
-        return function(info) {
-          console.log("change:");
-          console.log(info);
-          if (info.direction === 'pull' && info.change.docs_written > 0) {
-            return _this.noteWidget.show(_this.noteWidget.model.get('date'));
-          }
-        };
-      })(this),
-      onUpToDate: function(info) {
-        console.log("uptodate:");
-        return console.log(info);
-      },
-      onError: function(err) {
-        console.log("An error occured while synchronizing data:");
-        return console.log(err);
-      }
-    });
   };
 
   return AppView;
@@ -658,11 +566,13 @@ module.exports = DailyNoteView = (function(_super) {
   DailyNoteView.prototype.className = 'daily-note';
 
   DailyNoteView.prototype.getRenderData = function() {
-    var data, maxLength, _ref;
+    var data, date, maxLength, _ref;
+    date = moment(this.model.get('date')).startOf('day');
     data = {
-      date: this.model.get('date'),
+      date: date.format('YYYY-MM-DD'),
       text: this.model.get('text')
     };
+    data.displayDate = moment(data.date).format('ll');
     maxLength = 80;
     if (((_ref = data.text) != null ? _ref.length : void 0) > maxLength) {
       data.text = "" + (data.text.substring(0, maxLength)) + "...";
@@ -676,12 +586,10 @@ module.exports = DailyNoteView = (function(_super) {
 });
 
 ;require.register("views/daily_note_widget", function(exports, require, module) {
-var BaseView, DailyNoteWidget, pouch,
+var BaseView, DailyNoteWidget,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-pouch = require('../lib/db');
 
 BaseView = require('../lib/base_view');
 
@@ -714,13 +622,16 @@ module.exports = DailyNoteWidget = (function(_super) {
       this.isSaving = true;
       return setTimeout((function(_this) {
         return function() {
-          _this.model.set('date', _this.day);
-          _this.model.set('text', _this.textField.val());
-          return pouch.notes.save(_this.model.attributes, function(err) {
-            if (err) {
-              console.log(err);
+          _this.model.set('content', _this.textField.val());
+          return _this.model.save({
+            success: function() {
+              _this.isSaving = false;
+              return _this.saveNote();
+            },
+            error: function() {
+              this.isSaving = false;
+              return this.saveNote();
             }
-            return _this.isSaving = false;
           });
         };
       })(this), 3000);
@@ -728,13 +639,10 @@ module.exports = DailyNoteWidget = (function(_super) {
   };
 
   DailyNoteWidget.prototype.deleteNote = function() {
-    return pouch.notes.remove(this.model, (function(_this) {
-      return function() {
-        return Backbone.history.navigate('archives', {
-          trigger: true
-        });
-      };
-    })(this));
+    this.model.destroy();
+    return Backbone.history.navigate('archives', {
+      trigger: true
+    });
   };
 
   DailyNoteWidget.prototype.resizeTextArea = function() {
@@ -742,21 +650,13 @@ module.exports = DailyNoteWidget = (function(_super) {
     return (_ref = this.textField) != null ? _ref.height($(window).height() - 180) : void 0;
   };
 
-  DailyNoteWidget.prototype.show = function(day) {
-    if (!(this.isSaving || this.isTyping)) {
-      this.day = day;
-      this._showEl();
-      this.showLoading();
-      return pouch.notes.get(day, (function(_this) {
-        return function(err, model) {
-          _this.hideLoading();
-          _this.model = model;
-          _this.textField.val(model.get('text'));
-          _this.dateField.html(model.get('date'));
-          return _this._focusTextarea();
-        };
-      })(this));
-    }
+  DailyNoteWidget.prototype.show = function(note) {
+    this._hideLoading();
+    this.model = note;
+    this._showEl();
+    this.textField.val(this.model.get('content') || '');
+    this.dateField.html(moment(this.model.get('date')).format('ll'));
+    return this._focusTextarea();
   };
 
   DailyNoteWidget.prototype._focusTextarea = function() {
@@ -771,17 +671,23 @@ module.exports = DailyNoteWidget = (function(_super) {
     return this.$el.show();
   };
 
+  DailyNoteWidget.prototype._showLoading = function() {
+    return this.$('.spinner').show();
+  };
+
+  DailyNoteWidget.prototype._hideLoading = function() {
+    return this.$('.spinner').hide();
+  };
+
   return DailyNoteWidget;
 
 })(BaseView);
 });
 
 ;require.register("views/daily_notes", function(exports, require, module) {
-var DailyNoteView, DailyNotesCollection, DailyNotesView, ViewCollection, pouch,
+var DailyNoteView, DailyNotesCollection, DailyNotesView, ViewCollection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-pouch = require('../lib/db');
 
 ViewCollection = require('../lib/view_collection');
 
@@ -807,18 +713,10 @@ module.exports = DailyNotesView = (function(_super) {
   DailyNotesView.prototype.afterRender = function() {
     this.collection.on('reset', this.renderAll);
     this.collection.on('add', this.renderOne);
-    this.showLoading();
     return this.collection.fetch({
-      success: (function(_this) {
-        return function() {
-          return _this.hideLoading();
-        };
-      })(this),
-      error: (function(_this) {
-        return function(err) {
-          return console.log(err);
-        };
-      })(this)
+      success: function(models) {
+        return console.log(models);
+      }
     });
   };
 
@@ -832,8 +730,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-var locals_ = (locals || {}),date = locals_.date,text = locals_.text;
-buf.push("<!-- .daily_note --><a" + (jade.attr("href", "#" + (date) + "", true, false)) + " class=\"action\"><span class=\"date\">" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "</span><span class=\"text\">" + (jade.escape(null == (jade_interp = text) ? "" : jade_interp)) + "</span></a>");;return buf.join("");
+var locals_ = (locals || {}),date = locals_.date,displayDate = locals_.displayDate,text = locals_.text;
+buf.push("<!-- .daily_note --><a" + (jade.attr("href", "#" + (date) + "", true, false)) + " class=\"action\"><span class=\"date\">" + (jade.escape(null == (jade_interp = displayDate) ? "" : jade_interp)) + "</span><span class=\"text\">" + (jade.escape(null == (jade_interp = text) ? "" : jade_interp)) + "</span></a>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

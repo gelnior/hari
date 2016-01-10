@@ -11,7 +11,8 @@ module.exports = class Router extends Backbone.Router
 
 
     main: ->
-        @displayWidget 'dailyNote'
+        day = moment()
+        @navigate day.format('YYYY-MM-DD'), trigger: true
 
 
     archives: ->
@@ -22,7 +23,7 @@ module.exports = class Router extends Backbone.Router
         @displayWidget 'dailyNote', date
 
 
-    displayWidget: (view, id) ->
-        @mainView = new AppView() unless mainWidget?
-        @mainView.showWidget view, id
+    displayWidget: (view, date) ->
+        @mainView ?= new AppView()
+        @mainView.showWidget view, date
 

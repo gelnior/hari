@@ -1,8 +1,9 @@
 americano = require 'americano'
+
 config =
     common: [
-        #americano.bodyParser()
-        #americano.methodOverride()
+        americano.bodyParser()
+        americano.methodOverride()
         americano.errorHandler
             dumpExceptions: true
             showStack: true
@@ -19,6 +20,7 @@ config =
     ]
 
     plugins: [
+        'cozydb'
     ]
 
 module.exports = config

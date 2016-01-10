@@ -1,4 +1,3 @@
-pouch = require '../lib/db'
 
 BaseView = require '../lib/base_view'
 DailyNote = require '../models/daily_note'
@@ -32,38 +31,38 @@ module.exports = class AppView extends BaseView
         @archivesWidget = $ '#archives'
         @notes = new DailyNotes
 
-        @setSync()
-
 
     # Display given widget (note editor, note list...)
-    showWidget: (widget, id) ->
+    showWidget: (widget, date) ->
         @widgets.hide()
-        @[widget] id if @[widget]?
+        @[widget] date if @[widget]?
 
 
     # Load an display given note.
     dailyNote: (day) ->
-        day ?= moment().format 'YYYY-MM-DD'
-        @noteWidget.show day
+        if day?
+            day = moment(day).startOf 'day'
+        else
+            day = moment().startOf 'day'
+
+        dayValue = "#{day.format 'YYYY-MM-DDT00:00:00.000'}Z"
+        note = @notes.collection.findWhere
+            date: dayValue
+
+        if note?
+            note.set 'id',  day.format('YYYY-MM-DD')
+            @noteWidget.show note
+        else
+            note ?= new DailyNote date: day
+            note.fetch
+                success: (model) =>
+                    note.set 'id',  day.format('YYYY-MM-DD')
+                    @noteWidget.show note
+                error: (model) =>
+                    @noteWidget.show model
 
 
     # Show archives widget.
     archives: ->
         @archivesWidget.show()
-
-
-    # Configure PouchDB synchronisation.
-    setSync: ->
-        pouch.sync
-            onChange: (info) =>
-                console.log "change:"
-                console.log info
-                if info.direction is 'pull' and info.change.docs_written > 0
-                    @noteWidget.show @noteWidget.model.get 'date'
-            onUpToDate: (info) ->
-                console.log "uptodate:"
-                console.log info
-            onError: (err) ->
-                console.log "An error occured while synchronizing data:"
-                console.log err
 

@@ -30,3 +30,4 @@ module.exports = class BaseView extends Backbone.View
 
     hideLoading: ->
         @$('.spinner').hide()
+
