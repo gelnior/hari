@@ -170,6 +170,7 @@ button.ui-button[data-state="selected"] {
 #key-management {
   max-width: 720px;
   margin: auto;
+  padding: 1em;
 }
 [data-state~="default"],
 [data-state~="enabled"] {
