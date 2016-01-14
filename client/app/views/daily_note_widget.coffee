@@ -9,7 +9,6 @@ module.exports = class DailyNoteWidget extends BaseView
 
 
     events:
-        'keyup textarea': 'saveNote'
         'click .remove': 'deleteNote'
 
 
@@ -17,20 +16,24 @@ module.exports = class DailyNoteWidget extends BaseView
         @textField = @$ 'textarea'
         @dateField = @$ '.date-field'
         @isSaving = false
+        @previousContent = ''
 
 
-    # Save note to database after 3s.
+    # Save note to database. Encrypt content before updating the model and
+    # saving. That way only encrypted content is stored on the server.
     saveNote: =>
         content = @textField.val()
         vector = simpleCrypto.createNewVector()
-        simpleCrypto.encrypt(content, State.key, vector)
-        .then( (encryptedContent) =>
-            @model.set
-                content: encryptedContent
-                vector: simpleCrypto.arrayBufferToString vector
-            @model.save
-                always: =>
-        )
+
+        unless content is @previousContent
+            simpleCrypto.encrypt(content, State.key, vector)
+            .then( (encryptedContent) =>
+                @previousContent = content
+                @model.set
+                    content: encryptedContent
+                    vector: simpleCrypto.arrayBufferToString vector
+                @model.save()
+            )
 
 
     # Delete current note.
@@ -46,6 +49,8 @@ module.exports = class DailyNoteWidget extends BaseView
 
     # Display current widget for given day.
     # Reload text, if the widget is already visible.
+    # Decrypt content is content comes from the model. Data are stored
+    # encrypted, so decryption is required.
     show: (note) ->
         @model = note
 
@@ -55,21 +60,26 @@ module.exports = class DailyNoteWidget extends BaseView
         vector = @model.get('vector') or ''
 
         if encryptedContent.length is 0 or vector.length is 0
-            @showContent content
+            @_showContent content
         else
             cipherBuffer = simpleCrypto.stringToArrayBuffer encryptedContent
             vector = simpleCrypto.stringToArrayBuffer vector
 
             simpleCrypto.decrypt(cipherBuffer, State.key, vector)
-            .then(@showContent)
-            .catch (err) ->
-                console.log 'bouh', err
+            .then(@_showContent)
+            .catch (err) =>
+                console.log err
+                alert '''
+An error occured will decrypting your message. Is your key right?'''
+                @_showContent ''
 
         clearInterval @saveInterval
         @saveInterval = setInterval @saveNote, 1000
 
 
-    showContent: (text) =>
+    # Fill content with given text and focus on the text area.
+    _showContent: (text) =>
+        text = '' unless typeof(text) is 'string'
         @textField.val text
         @dateField.html moment(@model.get 'date').format 'll'
 

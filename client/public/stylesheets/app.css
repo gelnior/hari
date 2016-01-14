@@ -167,6 +167,10 @@ button.ui-button[data-state="selected"] {
   max-width: 720px;
   width: 100%;
 }
+#key-management {
+  max-width: 720px;
+  margin: auto;
+}
 [data-state~="default"],
 [data-state~="enabled"] {
   cursor: inherit;
@@ -305,3 +309,5 @@ cursor not-allowed {
   h2, h3 { page-break-after: avoid; }
 }
 
+
+/*# sourceMappingURL=app.css.map*/

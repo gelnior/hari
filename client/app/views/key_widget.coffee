@@ -9,12 +9,18 @@ module.exports = class KeyManagementWidget extends BaseView
 
     events:
         'click button': 'onUseKeyClicked'
+        'keyup input': 'onTextKeyUp'
 
 
     afterRender: ->
         @textField = @$ '#key-field'
         @useKeyButton = @$ 'button'
         @textField.focus()
+
+
+    onTextKeyUp: (event) ->
+        @onUseKeyClicked() if 13 in [event.keyCode, event.which]
+
 
     onUseKeyClicked: ->
         @showLoading()
@@ -25,11 +31,12 @@ module.exports = class KeyManagementWidget extends BaseView
             @hideLoading()
 
             alert(
-                'Key registered. All your messages will be encrypted with that key.'
+                'Key registered. You are now ready to use Hari!'
             )
             @textField.val null
             window.app.router.navigate '', trigger: true
         )
+
 
     show: ->
         @$el.show()

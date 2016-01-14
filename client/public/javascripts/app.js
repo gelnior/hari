@@ -126,10 +126,9 @@ module.exports = {
     }
   }
 };
-
 });
 
-require.register("collections/daily_notes", function(exports, require, module) {
+;require.register("collections/daily_notes", function(exports, require, module) {
 var DailyNotesCollection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -146,10 +145,9 @@ module.exports = DailyNotesCollection = (function(_super) {
   return DailyNotesCollection;
 
 })(Backbone.Collection);
-
 });
 
-require.register("initialize", function(exports, require, module) {
+;require.register("initialize", function(exports, require, module) {
 var app;
 
 app = require('application');
@@ -158,10 +156,9 @@ $(function() {
   require('lib/app_helpers');
   return app.initialize();
 });
-
 });
 
-require.register("lib/app_helpers", function(exports, require, module) {
+;require.register("lib/app_helpers", function(exports, require, module) {
 (function() {
   return (function() {
     var console, dummy, method, methods, _results;
@@ -176,10 +173,9 @@ require.register("lib/app_helpers", function(exports, require, module) {
     return _results;
   })();
 })();
-
 });
 
-require.register("lib/base_view", function(exports, require, module) {
+;require.register("lib/base_view", function(exports, require, module) {
 var BaseView,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -233,10 +229,9 @@ module.exports = BaseView = (function(_super) {
   return BaseView;
 
 })(Backbone.View);
-
 });
 
-require.register("lib/crypto", function(exports, require, module) {
+;require.register("lib/crypto", function(exports, require, module) {
 var crypto, decoder, encoder, simpleCrypto;
 
 crypto = window.crypto;
@@ -321,10 +316,9 @@ module.exports = simpleCrypto = {
     return new Encrypter(key);
   }
 };
-
 });
 
-require.register("lib/request", function(exports, require, module) {
+;require.register("lib/request", function(exports, require, module) {
 exports.request = function(type, url, data, callback) {
   return $.ajax({
     type: type,
@@ -362,10 +356,9 @@ exports.put = function(url, data, callback) {
 exports.del = function(url, callback) {
   return exports.request("DELETE", url, null, callback);
 };
-
 });
 
-require.register("lib/view_collection", function(exports, require, module) {
+;require.register("lib/view_collection", function(exports, require, module) {
 var BaseView, ViewCollection,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -485,10 +478,9 @@ module.exports = ViewCollection = (function(_super) {
   return ViewCollection;
 
 })(BaseView);
-
 });
 
-require.register("models/daily_note", function(exports, require, module) {
+;require.register("models/daily_note", function(exports, require, module) {
 var DailyNote,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -506,10 +498,9 @@ module.exports = DailyNote = (function(_super) {
   return DailyNote;
 
 })(Backbone.Model);
-
 });
 
-require.register("router", function(exports, require, module) {
+;require.register("router", function(exports, require, module) {
 var AppView, Router,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -560,10 +551,9 @@ module.exports = Router = (function(_super) {
   return Router;
 
 })(Backbone.Router);
-
 });
 
-require.register("views/app_view", function(exports, require, module) {
+;require.register("views/app_view", function(exports, require, module) {
 var AppView, BaseView, DailyNote, DailyNoteWidget, DailyNotes, KeyWidget, State,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -665,10 +655,9 @@ module.exports = AppView = (function(_super) {
   return AppView;
 
 })(BaseView);
-
 });
 
-require.register("views/daily_note", function(exports, require, module) {
+;require.register("views/daily_note", function(exports, require, module) {
 var BaseView, DailyNoteView,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -704,10 +693,9 @@ module.exports = DailyNoteView = (function(_super) {
   return DailyNoteView;
 
 })(BaseView);
-
 });
 
-require.register("views/daily_note_widget", function(exports, require, module) {
+;require.register("views/daily_note_widget", function(exports, require, module) {
 var BaseView, DailyNoteWidget, State, simpleCrypto,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -723,7 +711,7 @@ module.exports = DailyNoteWidget = (function(_super) {
   __extends(DailyNoteWidget, _super);
 
   function DailyNoteWidget() {
-    this.showContent = __bind(this.showContent, this);
+    this._showContent = __bind(this._showContent, this);
     this.deleteNote = __bind(this.deleteNote, this);
     this.saveNote = __bind(this.saveNote, this);
     return DailyNoteWidget.__super__.constructor.apply(this, arguments);
@@ -734,31 +722,32 @@ module.exports = DailyNoteWidget = (function(_super) {
   DailyNoteWidget.prototype.template = require('./templates/daily_note_widget');
 
   DailyNoteWidget.prototype.events = {
-    'keyup textarea': 'saveNote',
     'click .remove': 'deleteNote'
   };
 
   DailyNoteWidget.prototype.afterRender = function() {
     this.textField = this.$('textarea');
     this.dateField = this.$('.date-field');
-    return this.isSaving = false;
+    this.isSaving = false;
+    return this.previousContent = '';
   };
 
   DailyNoteWidget.prototype.saveNote = function() {
     var content, vector;
     content = this.textField.val();
     vector = simpleCrypto.createNewVector();
-    return simpleCrypto.encrypt(content, State.key, vector).then((function(_this) {
-      return function(encryptedContent) {
-        _this.model.set({
-          content: encryptedContent,
-          vector: simpleCrypto.arrayBufferToString(vector)
-        });
-        return _this.model.save({
-          always: function() {}
-        });
-      };
-    })(this));
+    if (content !== this.previousContent) {
+      return simpleCrypto.encrypt(content, State.key, vector).then((function(_this) {
+        return function(encryptedContent) {
+          _this.previousContent = content;
+          _this.model.set({
+            content: encryptedContent,
+            vector: simpleCrypto.arrayBufferToString(vector)
+          });
+          return _this.model.save();
+        };
+      })(this));
+    }
   };
 
   DailyNoteWidget.prototype.deleteNote = function() {
@@ -780,19 +769,26 @@ module.exports = DailyNoteWidget = (function(_super) {
     encryptedContent = this.model.get('content') || '';
     vector = this.model.get('vector') || '';
     if (encryptedContent.length === 0 || vector.length === 0) {
-      this.showContent(content);
+      this._showContent(content);
     } else {
       cipherBuffer = simpleCrypto.stringToArrayBuffer(encryptedContent);
       vector = simpleCrypto.stringToArrayBuffer(vector);
-      simpleCrypto.decrypt(cipherBuffer, State.key, vector).then(this.showContent)["catch"](function(err) {
-        return console.log('bouh', err);
-      });
+      simpleCrypto.decrypt(cipherBuffer, State.key, vector).then(this._showContent)["catch"]((function(_this) {
+        return function(err) {
+          console.log(err);
+          alert('An error occured will decrypting your message. Is your key right?');
+          return _this._showContent('');
+        };
+      })(this));
     }
     clearInterval(this.saveInterval);
     return this.saveInterval = setInterval(this.saveNote, 1000);
   };
 
-  DailyNoteWidget.prototype.showContent = function(text) {
+  DailyNoteWidget.prototype._showContent = function(text) {
+    if (typeof text !== 'string') {
+      text = '';
+    }
     this.textField.val(text);
     this.dateField.html(moment(this.model.get('date')).format('ll'));
     this._hideLoading();
@@ -822,10 +818,9 @@ module.exports = DailyNoteWidget = (function(_super) {
   return DailyNoteWidget;
 
 })(BaseView);
-
 });
 
-require.register("views/daily_notes", function(exports, require, module) {
+;require.register("views/daily_notes", function(exports, require, module) {
 var DailyNoteView, DailyNotesCollection, DailyNotesView, ViewCollection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -864,10 +859,9 @@ module.exports = DailyNotesView = (function(_super) {
   return DailyNotesView;
 
 })(ViewCollection);
-
 });
 
-require.register("views/key_widget", function(exports, require, module) {
+;require.register("views/key_widget", function(exports, require, module) {
 var BaseView, KeyManagementWidget, State, simpleCrypto,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -890,13 +884,20 @@ module.exports = KeyManagementWidget = (function(_super) {
   KeyManagementWidget.prototype.template = require('./templates/key_management_widget');
 
   KeyManagementWidget.prototype.events = {
-    'click button': 'onUseKeyClicked'
+    'click button': 'onUseKeyClicked',
+    'keyup input': 'onTextKeyUp'
   };
 
   KeyManagementWidget.prototype.afterRender = function() {
     this.textField = this.$('#key-field');
     this.useKeyButton = this.$('button');
     return this.textField.focus();
+  };
+
+  KeyManagementWidget.prototype.onTextKeyUp = function(event) {
+    if (13 === event.keyCode || 13 === event.which) {
+      return this.onUseKeyClicked();
+    }
   };
 
   KeyManagementWidget.prototype.onUseKeyClicked = function() {
@@ -907,7 +908,7 @@ module.exports = KeyManagementWidget = (function(_super) {
       return function(key) {
         State.key = key;
         _this.hideLoading();
-        alert('Key registered. All your messages will be encrypted with that key.');
+        alert('Key registered. You are now ready to use Hari!');
         _this.textField.val(null);
         return window.app.router.navigate('', {
           trigger: true
@@ -924,10 +925,9 @@ module.exports = KeyManagementWidget = (function(_super) {
   return KeyManagementWidget;
 
 })(BaseView);
-
 });
 
-require.register("views/state", function(exports, require, module) {
+;require.register("views/state", function(exports, require, module) {
 var State;
 
 module.exports = State = (function() {
@@ -936,10 +936,9 @@ module.exports = State = (function() {
   return State;
 
 })();
-
 });
 
-require.register("views/templates/daily_note", function(exports, require, module) {
+;require.register("views/templates/daily_note", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
@@ -962,10 +961,9 @@ if (typeof define === 'function' && define.amd) {
 h2.date = date;
 
 textarea;
-
 });
 
-require.register("views/templates/daily_note_widget", function(exports, require, module) {
+;require.register("views/templates/daily_note_widget", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
@@ -1009,7 +1007,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<p><Please>enter your cipher key</Please></p><p><input id=\"key-field\" type=\"password\"/></p><p><button class=\"unlock\">unlock</button></p>");;return buf.join("");
+buf.push("<p>Welcome to Hari,</p><p>Hari is your Diary. All your daily stories are stored in your Cozy through\nit. What makes it really different is that like any good diary, Hari can be\nlocked. Yes, noone can ready your Diary without a key. How does it work?\nIt's very simple software allows locking through the usage of encryption.</p><p>All your texts can be encrypted with a single text, called passphrase or\nkey. It's you who decide which key you want to use.\nSo, each time you connect, enter in the following field your encryption\nkey. The first time you will enter it your key will be registered and use\nto unencrypt your message. After it will be reused. </p><p>Remember that your key cannot be changed, lost or forgotten. So, be careful\nwhen you chose it. But make it complex to be sure noone will guess it.\nYour key will be required each time you connect on Hari. So, Your data\ncannot be read without it.</p><p><input id=\"key-field\" type=\"password\"/></p><p><button class=\"unlock\">unlock</button></p>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1023,3 +1021,4 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;
+//# sourceMappingURL=app.js.map
