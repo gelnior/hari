@@ -167,6 +167,11 @@ button.ui-button[data-state="selected"] {
   max-width: 720px;
   width: 100%;
 }
+#key-management {
+  max-width: 720px;
+  margin: auto;
+  padding: 1em;
+}
 [data-state~="default"],
 [data-state~="enabled"] {
   cursor: inherit;

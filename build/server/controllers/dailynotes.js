@@ -60,5 +60,26 @@ module.exports = {
         });
       }
     });
+  },
+  "delete": function(req, res, next) {
+    var date, note;
+    date = moment(req.params.date, 'YYYY-MM-DD').startOf('day');
+    return note = DailyNote.getByDate(date, function(err, note) {
+      if (err) {
+        return next(err);
+      }
+      if (note != null) {
+        return note.destroy(function(err) {
+          if (err) {
+            return next(err);
+          }
+          return res.send({
+            success: true
+          }, 204);
+        });
+      } else {
+        return res.sendStatus(404);
+      }
+    });
   }
 };

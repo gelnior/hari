@@ -10,6 +10,7 @@ module.exports = {
   },
   'daily-notes/:date': {
     get: dailyNotes.get,
-    put: dailyNotes.createOrUpdate
+    put: dailyNotes.createOrUpdate,
+    "delete": dailyNotes["delete"]
   }
 };
