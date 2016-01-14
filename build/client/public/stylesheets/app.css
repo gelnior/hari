@@ -53,6 +53,7 @@ a:visited:hover {
 }
 #menu a {
   float: right;
+  margin-right: 1em;
 }
 .ui-button,
 a.ui-button,

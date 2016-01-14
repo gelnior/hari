@@ -126,9 +126,10 @@ module.exports = {
     }
   }
 };
+
 });
 
-;require.register("collections/daily_notes", function(exports, require, module) {
+require.register("collections/daily_notes", function(exports, require, module) {
 var DailyNotesCollection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -145,9 +146,10 @@ module.exports = DailyNotesCollection = (function(_super) {
   return DailyNotesCollection;
 
 })(Backbone.Collection);
+
 });
 
-;require.register("initialize", function(exports, require, module) {
+require.register("initialize", function(exports, require, module) {
 var app;
 
 app = require('application');
@@ -156,9 +158,10 @@ $(function() {
   require('lib/app_helpers');
   return app.initialize();
 });
+
 });
 
-;require.register("lib/app_helpers", function(exports, require, module) {
+require.register("lib/app_helpers", function(exports, require, module) {
 (function() {
   return (function() {
     var console, dummy, method, methods, _results;
@@ -173,9 +176,10 @@ $(function() {
     return _results;
   })();
 })();
+
 });
 
-;require.register("lib/base_view", function(exports, require, module) {
+require.register("lib/base_view", function(exports, require, module) {
 var BaseView,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -229,9 +233,10 @@ module.exports = BaseView = (function(_super) {
   return BaseView;
 
 })(Backbone.View);
+
 });
 
-;require.register("lib/crypto", function(exports, require, module) {
+require.register("lib/crypto", function(exports, require, module) {
 var crypto, decoder, encoder, simpleCrypto;
 
 crypto = window.crypto;
@@ -316,9 +321,10 @@ module.exports = simpleCrypto = {
     return new Encrypter(key);
   }
 };
+
 });
 
-;require.register("lib/request", function(exports, require, module) {
+require.register("lib/request", function(exports, require, module) {
 exports.request = function(type, url, data, callback) {
   return $.ajax({
     type: type,
@@ -356,9 +362,10 @@ exports.put = function(url, data, callback) {
 exports.del = function(url, callback) {
   return exports.request("DELETE", url, null, callback);
 };
+
 });
 
-;require.register("lib/view_collection", function(exports, require, module) {
+require.register("lib/view_collection", function(exports, require, module) {
 var BaseView, ViewCollection,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -478,9 +485,10 @@ module.exports = ViewCollection = (function(_super) {
   return ViewCollection;
 
 })(BaseView);
+
 });
 
-;require.register("models/daily_note", function(exports, require, module) {
+require.register("models/daily_note", function(exports, require, module) {
 var DailyNote,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -498,9 +506,10 @@ module.exports = DailyNote = (function(_super) {
   return DailyNote;
 
 })(Backbone.Model);
+
 });
 
-;require.register("router", function(exports, require, module) {
+require.register("router", function(exports, require, module) {
 var AppView, Router,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -551,9 +560,10 @@ module.exports = Router = (function(_super) {
   return Router;
 
 })(Backbone.Router);
+
 });
 
-;require.register("views/app_view", function(exports, require, module) {
+require.register("views/app_view", function(exports, require, module) {
 var AppView, BaseView, DailyNote, DailyNoteWidget, DailyNotes, KeyWidget, State,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -655,9 +665,10 @@ module.exports = AppView = (function(_super) {
   return AppView;
 
 })(BaseView);
+
 });
 
-;require.register("views/daily_note", function(exports, require, module) {
+require.register("views/daily_note", function(exports, require, module) {
 var BaseView, DailyNoteView,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -693,9 +704,10 @@ module.exports = DailyNoteView = (function(_super) {
   return DailyNoteView;
 
 })(BaseView);
+
 });
 
-;require.register("views/daily_note_widget", function(exports, require, module) {
+require.register("views/daily_note_widget", function(exports, require, module) {
 var BaseView, DailyNoteWidget, State, simpleCrypto,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -810,9 +822,10 @@ module.exports = DailyNoteWidget = (function(_super) {
   return DailyNoteWidget;
 
 })(BaseView);
+
 });
 
-;require.register("views/daily_notes", function(exports, require, module) {
+require.register("views/daily_notes", function(exports, require, module) {
 var DailyNoteView, DailyNotesCollection, DailyNotesView, ViewCollection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -851,9 +864,10 @@ module.exports = DailyNotesView = (function(_super) {
   return DailyNotesView;
 
 })(ViewCollection);
+
 });
 
-;require.register("views/key_widget", function(exports, require, module) {
+require.register("views/key_widget", function(exports, require, module) {
 var BaseView, KeyManagementWidget, State, simpleCrypto,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -910,9 +924,10 @@ module.exports = KeyManagementWidget = (function(_super) {
   return KeyManagementWidget;
 
 })(BaseView);
+
 });
 
-;require.register("views/state", function(exports, require, module) {
+require.register("views/state", function(exports, require, module) {
 var State;
 
 module.exports = State = (function() {
@@ -921,9 +936,10 @@ module.exports = State = (function() {
   return State;
 
 })();
+
 });
 
-;require.register("views/templates/daily_note", function(exports, require, module) {
+require.register("views/templates/daily_note", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
@@ -946,9 +962,10 @@ if (typeof define === 'function' && define.amd) {
 h2.date = date;
 
 textarea;
+
 });
 
-;require.register("views/templates/daily_note_widget", function(exports, require, module) {
+require.register("views/templates/daily_note_widget", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
@@ -1006,4 +1023,3 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;
-//# sourceMappingURL=app.js.map

@@ -28,14 +28,15 @@ module.exports = {
     var date, note;
     date = moment(req.params.date, 'YYYY-MM-DD').startOf('day');
     return note = DailyNote.getByDate(date, function(err, note) {
-      var content;
+      var content, ref, vector;
       if (err) {
         return next(err);
       }
-      content = req.body.content;
+      ref = req.body, content = ref.content, vector = ref.vector;
       if (note != null) {
         return note.updateAttributes({
-          content: content
+          content: content,
+          vector: vector
         }, function(err) {
           if (err) {
             return next(err);
@@ -47,7 +48,8 @@ module.exports = {
       } else {
         return DailyNote.create({
           date: date,
-          content: content
+          content: content,
+          vector: vector
         }, function(err) {
           if (err) {
             return next(err);

@@ -5,7 +5,8 @@ cozydb = require('cozydb');
 
 module.exports = DailyNote = cozydb.getModel('DailyNote', {
   date: Date,
-  content: String
+  content: String,
+  vector: String
 });
 
 DailyNote.all = function(callback) {
