@@ -10,4 +10,5 @@ module.exports =
     'daily-notes/:date':
         get: dailyNotes.get
         put: dailyNotes.createOrUpdate
+        delete: dailyNotes.delete
 
