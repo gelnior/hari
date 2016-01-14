@@ -4,6 +4,7 @@ cozydb = require 'cozydb'
 module.exports = DailyNote = cozydb.getModel 'DailyNote',
     date: Date
     content: String
+    vector: String
 
 
 DailyNote.all = (callback) ->

@@ -23,13 +23,13 @@ module.exports =
         note = DailyNote.getByDate date, (err, note) ->
             return next err if err
 
-            content = req.body.content
+            {content, vector} = req.body
             if note?
-                note.updateAttributes {content}, (err) ->
+                note.updateAttributes {content, vector}, (err) ->
                     return next err if err
                     res.send success: true
             else
-                DailyNote.create {date, content}, (err) ->
+                DailyNote.create {date, content, vector}, (err) ->
                     return next err if err
                     res.send success: true
 
