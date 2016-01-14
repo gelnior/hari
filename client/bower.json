@@ -1,0 +1,17 @@
+{
+  "name": "hari",
+  "homepage": "https://github.com/gelnior/hari",
+  "authors": [
+    "Gelnior"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "crypto-js": "3.1.6"
+  }
+}

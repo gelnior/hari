@@ -3,7 +3,7 @@ exports.config =
         javascripts:
             joinTo:
                 'javascripts/app.js': /^app/
-                'javascripts/vendor.js': /^vendor/
+                'javascripts/vendor.js': /^(bower_components|vendor)/
             order:
                 # Files in `vendor` directories are compiled before other files
                 # even if they aren't specified in order.
@@ -13,6 +13,8 @@ exports.config =
                     'vendor/javascripts/backbone-1.1.2.min.js'
                     'vendor/javascripts/bootstrap-3.1.1.min.js'
                     'vendor/javascripts/moment-2.9.0.min.js'
+                    'vendor/javascripts/moment-2.9.0.min.js'
+                    'bower_components/crypto-js/crypto-js.js'
                 ]
 
         stylesheets:
