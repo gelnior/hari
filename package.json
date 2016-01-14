@@ -33,6 +33,10 @@
     "test": "mocha",
     "start": "node build/server.js"
   },
-  "cozy-permissions": {},
+  "cozy-permissions": {
+    "DailyNote": {
+      "description": "Note for each day of your Diary."
+    },
+  },
   "cozy-displayName": "Hari"
 }
