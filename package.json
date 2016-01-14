@@ -36,7 +36,7 @@
   "cozy-permissions": {
     "DailyNote": {
       "description": "Note for each day of your Diary."
-    },
+    }
   },
   "cozy-displayName": "Hari"
 }
