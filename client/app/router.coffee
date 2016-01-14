@@ -7,12 +7,17 @@ module.exports = class Router extends Backbone.Router
     routes:
         '': 'main'
         'archives': 'archives'
+        'key': 'key'
         ':date': 'note'
 
 
     main: ->
         day = moment()
         @navigate day.format('YYYY-MM-DD'), trigger: true
+
+
+    key: ->
+        @displayWidget 'key'
 
 
     archives: ->

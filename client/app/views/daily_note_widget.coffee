@@ -1,4 +1,6 @@
 BaseView = require '../lib/base_view'
+simpleCrypto = require '../lib/crypto'
+State = require './state'
 
 
 module.exports = class DailyNoteWidget extends BaseView
@@ -19,18 +21,16 @@ module.exports = class DailyNoteWidget extends BaseView
 
     # Save note to database after 3s.
     saveNote: =>
-        unless @isSaving
-            @isSaving = true
-            setTimeout =>
-                @model.set 'content', @textField.val()
-                @model.save
-                    success: =>
-                        @isSaving = false
-                        @saveNote()
-                    error: ->
-                        @isSaving = false
-                        @saveNote()
-            , 3000
+        content = @textField.val()
+        vector = simpleCrypto.createNewVector()
+        simpleCrypto.encrypt(content, State.key, vector)
+        .then( (encryptedContent) =>
+            @model.set
+                content: encryptedContent
+                vector: simpleCrypto.arrayBufferToString vector
+            @model.save
+                always: =>
+        )
 
 
     # Delete current note.
@@ -47,14 +47,33 @@ module.exports = class DailyNoteWidget extends BaseView
     # Display current widget for given day.
     # Reload text, if the widget is already visible.
     show: (note) ->
-        @_hideLoading()
         @model = note
 
         @_showEl()
 
-        @textField.val @model.get('content') or ''
+        encryptedContent = @model.get('content') or ''
+        vector = @model.get('vector') or ''
+
+        if encryptedContent.length is 0 or vector.length is 0
+            @showContent content
+        else
+            cipherBuffer = simpleCrypto.stringToArrayBuffer encryptedContent
+            vector = simpleCrypto.stringToArrayBuffer vector
+
+            simpleCrypto.decrypt(cipherBuffer, State.key, vector)
+            .then(@showContent)
+            .catch (err) ->
+                console.log 'bouh', err
+
+        clearInterval @saveInterval
+        @saveInterval = setInterval @saveNote, 1000
+
+
+    showContent: (text) =>
+        @textField.val text
         @dateField.html moment(@model.get 'date').format 'll'
 
+        @_hideLoading()
         @_focusTextarea()
 
 

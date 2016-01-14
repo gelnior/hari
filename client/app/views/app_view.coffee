@@ -1,8 +1,10 @@
 
 BaseView = require '../lib/base_view'
+State = require './state'
 DailyNote = require '../models/daily_note'
 DailyNotes = require './daily_notes'
 DailyNoteWidget = require './daily_note_widget'
+KeyWidget = require './key_widget'
 
 
 # Represents main view, the one that builds widgets and display them
@@ -29,13 +31,18 @@ module.exports = class AppView extends BaseView
         $(window).on 'unload', @noteWidget.saveNote
 
         @archivesWidget = $ '#archives'
+        @keyWidget = new KeyWidget
         @notes = new DailyNotes
 
 
     # Display given widget (note editor, note list...)
     showWidget: (widget, date) ->
         @widgets.hide()
-        @[widget] date if @[widget]?
+
+        if State.key? or widget is 'key'
+            @[widget] date
+        else
+            window.app.router.navigate 'key', trigger: true
 
 
     # Load an display given note.
@@ -65,4 +72,8 @@ module.exports = class AppView extends BaseView
     # Show archives widget.
     archives: ->
         @archivesWidget.show()
+
+
+    key: ->
+        @keyWidget.show()
 
