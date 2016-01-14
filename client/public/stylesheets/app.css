@@ -53,6 +53,7 @@ a:visited:hover {
 }
 #menu a {
   float: right;
+  margin-right: 1em;
 }
 .ui-button,
 a.ui-button,
@@ -304,3 +305,5 @@ cursor not-allowed {
   h2, h3 { page-break-after: avoid; }
 }
 
+
+/*# sourceMappingURL=app.css.map*/
