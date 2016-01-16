@@ -932,6 +932,7 @@ module.exports = KeyManagementWidget = (function(_super) {
   };
 
   KeyManagementWidget.prototype.show = function() {
+    State.key = null;
     this.$el.show();
     return this.useKeyButton.val(null);
   };
@@ -1005,7 +1006,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div id=\"content\"><div id=\"menu\"><h1><a href=\"#\">Hari</a></h1><a href=\"#archives\">archives</a><a href=\"#key\" class=\"key-link\">key</a><div></div></div><div id=\"daily-note\" class=\"widget\"></div><div id=\"archives\" class=\"widget\"><h2>Archives</h2><div id=\"daily-notes\"></div></div><div id=\"key-management\" class=\"widget\"></div></div>");;return buf.join("");
+buf.push("<div id=\"content\"><div id=\"menu\"><h1><a href=\"#\">Hari</a></h1><a href=\"#archives\">archives</a><a href=\"#key\" class=\"key-link\">lock</a><div></div></div><div id=\"daily-note\" class=\"widget\"></div><div id=\"archives\" class=\"widget\"><h2>Archives</h2><div id=\"daily-notes\"></div></div><div id=\"key-management\" class=\"widget\"></div></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
