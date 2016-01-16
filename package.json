@@ -38,5 +38,6 @@
       "description": "Note for each day of your Diary."
     }
   },
-  "cozy-displayName": "Hari"
+  "cozy-displayName": "Hari",
+  "icon-path": "icon.svg"
 }
