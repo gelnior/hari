@@ -39,6 +39,7 @@ module.exports = class KeyManagementWidget extends BaseView
 
 
     show: ->
+        State.key = null
         @$el.show()
         @useKeyButton.val null
 
